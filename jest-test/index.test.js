@@ -1,24 +1,42 @@
 const axios = require("axios");
 
 const BACKEND_URL = "http://localhost:5173";
+const WebSocket_URL = "http://localhost:3000";
 
+const signUpUser = async (username, password) => {
+  const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+    username,
+    password,
+    type: "user",
+  });
+  return res;
+};
+
+const signUpAdmin = async (username, password) => {
+  const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+    username,
+    password,
+    type: "admin",
+  });
+  return res;
+};
+
+const signInMethod = async (username, password) => {
+  const res = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
+    username,
+    password,
+  });
+  return res;
+};
 describe("Authentication endpoint", () => {
   test("User is able to sign up only once", async () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    const res = signUpAdmin(username, password);
     expect(res.status).toBe(200);
 
-    const updatedRes = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    const updatedRes = signUpAdmin(username, password);
     expect(updatedRes.status).toBe(400);
   });
 
@@ -37,16 +55,9 @@ describe("Authentication endpoint", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    signUpAdmin(username, password);
 
-    const res = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
+    const res = signInMethod(username, password);
     expect(res.status).toBe(200);
     expect(response.data.token).toBeDefined();
   });
@@ -55,16 +66,9 @@ describe("Authentication endpoint", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    signUpAdmin(username, password);
 
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username: "WrongUsername",
-      password,
-    });
+    const response = signInMethod("WrongUsername", password);
 
     expect(response.status).toBe(403);
   });
@@ -77,16 +81,9 @@ describe("User metadata endpoint", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    signUpAdmin(username, password);
 
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
+    const response = signInMethod(username, password);
 
     token = response.data.token;
 
@@ -141,18 +138,11 @@ describe("User avatar information", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    const signUpRes = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    const signUpRes = signUpAdmin(username, password);
 
     userId = signUpRes.data.userId;
 
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
+    const response = signInMethod(username, password);
 
     token = response.data.token;
 
@@ -205,36 +195,21 @@ describe("Space information", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    const signUpRes = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    const signUpRes = signUpAdmin(username, password);
 
     adminId = signUpRes.data.userId;
 
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
+    const response = signInMethod(username, password);
 
     adminToken = response.data.token;
 
     const username1 = "Aditya" + Math.random();
-    const password1 = "Pass@123";
 
-    const signUpRes1 = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username1,
-      password1,
-      type: "user",
-    });
+    const signUpRes1 = signUpUser(username1, password);
 
     userId = signUpRes1.data.userId;
 
-    const response1 = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username1,
-      password1,
-    });
+    const response1 = signInMethod(username1, password);
 
     userToken = response1.data.token;
 
@@ -467,35 +442,20 @@ describe("Arena endpoints", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    const signUpRes = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
-
+    const signUpRes = signUpAdmin(username, password);
     adminId = signUpRes.data.userId;
 
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
+    const response = signInMethod(username, password);
 
     adminToken = response.data.token;
 
     const username1 = "Aditya" + Math.random();
 
-    const signUpRes1 = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username1,
-      password,
-      type: "user",
-    });
+    const signUpRes1 = signUpUser(username1, password);
 
     userId = signUpRes1.data.userId;
 
-    const response1 = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username1,
-      password,
-    });
+    const response1 = signInMethod(username1, password);
 
     userToken = response1.data.token;
 
@@ -668,35 +628,21 @@ describe("Admin endpoints", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    const signUpRes = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username,
-      password,
-      type: "admin",
-    });
+    const signUpRes = signUpAdmin(username, password);
 
     adminId = signUpRes.data.userId;
 
-    const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username,
-      password,
-    });
+    const response = signInMethod(username, password);
 
     adminToken = response.data.token;
 
     const username1 = "Aditya" + Math.random();
 
-    const signUpRes1 = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
-      username1,
-      password,
-      type: "user",
-    });
+    const signUpRes1 = signUpUser(username1, password);
 
     userId = signUpRes1.data.userId;
 
-    const response1 = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
-      username1,
-      password,
-    });
+    const response1 = signInMethod(username1, password);
 
     userToken = response1.data.token;
   });
@@ -815,7 +761,6 @@ describe("Admin endpoints", () => {
     expect(resAvatar.status).toBe(403);
   });
   test("Admin is able to update an element", async () => {
-
     const resElement = await axios.post(
       `${BACKEND_URL}/api/v1/admin/element`,
       {
@@ -845,5 +790,264 @@ describe("Admin endpoints", () => {
       }
     );
     expect(resUpdateElement.status).toBe(200);
-  })
+  });
+});
+
+describe("WebSocket Tests", () => {
+  let adminUserId;
+  let adminToken;
+  let userId;
+  let userToken;
+  let mapId;
+  let element1Id;
+  let element2Id;
+  let spaceId;
+  let ws1;
+  let ws2;
+  let ws1Msg = [];
+  let ws2Msg = [];
+  let userX;
+  let userY;
+  let adminX;
+  let adminY;
+
+  function waitForAndPopLatestMessage(messageArray) {
+    return new Promise((r) => {
+      if (messageArray.length > 0) {
+        resolve(messageArray.shift());
+      } else {
+        let interval = setTimeout(() => {
+          if (messageArray.length > 0) {
+            resolve(messageArray.shift());
+            clearInterval(interval);
+          }
+        }, 100);
+      }
+    });
+  }
+
+  async function setUpHTTP() {
+    const username = "Aditya" + Math.random();
+    const password = "Pass@123";
+
+    const signUpResponse = signUpAdmin(username, password);
+
+    adminUserId = signUpResponse.data.userId;
+
+    const signInResponse = signInMethod(username, password);
+
+    adminToken = signInResponse.data.token;
+
+    const userSignupRes = signUpUser(username + "-user", password);
+
+    userId = userSignupRes.data.userId;
+
+    const userSignInRes = signInMethod(username + "-user", password);
+
+    userToken = userSignInRes.data.token;
+
+    const resElement1 = await axios.post(
+      `${BACKEND_URL}/api/v1/admin/element`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
+        width: 1,
+        height: 1,
+        static: true,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+    const resElement2 = await axios.post(
+      `${BACKEND_URL}/api/v1/admin/element`,
+      {
+        imageUrl:
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRCRca3wAR4zjPPTzeIY9rSwbbqB6bB2hVkoTXN4eerXOIkJTG1GpZ9ZqSGYafQPToWy_JTcmV5RHXsAsWQC3tKnMlH_CsibsSZ5oJtbakq&usqp=CAE",
+        width: 1,
+        height: 1,
+        static: true,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+    element1Id = resElement1.data.id;
+    element2Id = resElement2.data.id;
+
+    const resMap = await axios.post(
+      `${BACKEND_URL}/api/v1/admin/map`,
+      {
+        thumbnail: "https://thumbnail.com/a.png",
+        dimensions: "100x200",
+        name: "100 person interview room",
+        defaultElements: [
+          {
+            elementId: element1Id,
+            x: 20,
+            y: 20,
+          },
+          {
+            elementId: element1Id,
+            x: 18,
+            y: 20,
+          },
+          {
+            elementId: element2Id,
+            x: 19,
+            y: 20,
+          },
+        ],
+      },
+      {
+        headers: {
+          authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+    mapId = resMap.data.id;
+
+    const space = await axios.post(
+      `${BACKEND_URL}/api/v1/space`,
+      {
+        name: "Test",
+        dimensions: "100x200",
+        mapId: mapId,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+    spaceId = space.data.spaceId;
+  }
+
+  async function setUpWS() {
+    ws1 = new WebSocket(WebSocket_URL);
+
+    await new Promise((r) => {
+      ws1.onopen = r;
+    });
+    ws1.onmessage = (event) => {
+      ws1Msg.push(JSON.parse(event.data));
+    };
+
+    ws2 = new WebSocket(WebSocket_URL);
+
+    await new Promise((r) => {
+      ws2.onopen = r;
+    });
+
+    
+    ws2.onmessage = (event) => {
+      ws2Msg.push(JSON.parse(event.data));
+    };
+  }
+
+  beforeAll(() => {
+    setUpHTTP();
+    setUpWS();
+  });
+
+  test("Get back ack for joining the space", async () => {
+    ws1.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          spaceId: spaceId,
+          token: adminToken,
+        },
+      })
+    );
+
+    const message1 = await waitForAndPopLatestMessage(ws1Msg);
+
+    ws2.send(
+      JSON.stringify({
+        type: "join",
+        payload: {
+          spaceId: spaceId,
+          token: userToken,
+        },
+      })
+    );
+
+    
+    const message2 = await waitForAndPopLatestMessage(ws2Msg);
+    const message3 = await waitForAndPopLatestMessage(ws1Msg);
+
+    expect(message1.type).toBe("space-joined");
+    expect(message1.type).toBe("space-joined");
+    expect(message1.payload.users.length).toBe(0);
+    expect(message2.payload.users.length).toBe(1);
+    expect(message3.type).toBe("user-joined");
+    expect(message3.payload.y).toBe(message2.payload.spawn.y);
+    expect(message3.payload.userId).toBe(userId);
+    expect(message3.payload.x).toBe(message2.payload.spawn.x);
+
+    adminX = message1.payload.spwan.x;
+    adminY = message1.payload.spwan.y;
+    userX = message2.payload.spwan.x;
+    userY = message2.payload.spwan.y;
+  });
+
+  test("User should not be able to move across the boundary of the wall", async () => {
+    ws1.send(
+      JSON.stringify({
+        type: "move",
+        payload: {
+          x: 100000,
+          y: 10000,
+        },
+      })
+    );
+
+    const msg = await waitForAndPopLatestMessage(ws1Msg);
+    expect(msg.type).toBe("movement-rejected");
+    expect(msg.payload.x).toBe(adminX);
+    expect(msg.payload.y).toBe(adminY);
+  });
+
+  test("User should not be able to move more than two block at the same tym", async () => {
+    ws1.send(
+      JSON.stringify({
+        type: "move",
+        payload: {
+          x: adminX + 2,
+          y: adminY + 3,
+        },
+      })
+    );
+
+    const msg = await waitForAndPopLatestMessage(ws1Msg);
+    expect(msg.type).toBe("movement-rejected");
+    expect(msg.payload.x).toBe(adminX);
+    expect(msg.payload.y).toBe(adminY);
+  });
+  test("Correct movement should be broadcasted to the other sockets in the room",async () => {
+    ws1.send(JSON.stringify({
+        type: "move",
+        payload: {
+            x: adminX + 1,
+            y: adminY
+        }
+    }));
+
+    const message = await waitForAndPopLatestMessage(ws2Msg);
+    expect(message.type).toBe("movement")
+    expect(message.payload.x).toBe(adminX + 1)
+    expect(message.payload.y).toBe(adminY)
+})
+
+test("If a user leaves, the other user receives a leave event", async () => {
+    ws1.close()
+    const message = await waitForAndPopLatestMessage(ws2Msg);
+    expect(message.type).toBe("user-left")
+    expect(message.payload.userId).toBe(adminUserId)
+})
 });
