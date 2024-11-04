@@ -4,7 +4,7 @@ const BACKEND_URL = "http://localhost:5173";
 const WebSocket_URL = "http://localhost:3000";
 
 const signUpUser = async (username, password) => {
-  const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+  const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
     username,
     password,
     type: "user",
@@ -13,7 +13,7 @@ const signUpUser = async (username, password) => {
 };
 
 const signUpAdmin = async (username, password) => {
-  const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+  const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
     username,
     password,
     type: "admin",
@@ -22,7 +22,7 @@ const signUpAdmin = async (username, password) => {
 };
 
 const signInMethod = async (username, password) => {
-  const res = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
+  const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signin`, {
     username,
     password,
   });
@@ -44,7 +44,7 @@ describe("Authentication endpoint", () => {
     const username = "Aditya" + Math.random();
     const password = "Pass@123";
 
-    const res = await axios.post(`${BACKEND_URL}/api/v1/signup`, {
+    const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
       password,
       type: "admin",
     });
