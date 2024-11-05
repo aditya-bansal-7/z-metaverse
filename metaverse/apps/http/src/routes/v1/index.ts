@@ -14,7 +14,7 @@ router.get("/avatars",(req,res) =>{
 
 })
 
-router.use("/user",userRouter )
-router.use("/auth",authRouter )
-router.use("/admin",adminRouter )
-router.use("/space",spaceRouter )
+router.use("/user", userRouter)
+router.use("/auth" ,authRouter)
+router.use("/space", spaceRouter)
+router.use("/admin", adminRouter)

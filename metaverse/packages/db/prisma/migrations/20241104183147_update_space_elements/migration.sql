@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "spaceElements" ALTER COLUMN "x" DROP NOT NULL,
+ALTER COLUMN "y" DROP NOT NULL;
