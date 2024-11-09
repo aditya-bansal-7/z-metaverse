@@ -81,10 +81,12 @@ spaceRouter.get("/:spaceId", async (req, res) => {
         const space = await client.space.findUnique({
             where: {
                 id: req.params.spaceId
-            }, select: {
-                elements: true,
-                width: true,
-                height: true,
+            }, include: {
+                elements: {
+                    include: {
+                        element: true
+                    }
+                }
             }
         })
         if (!space) {
@@ -94,14 +96,19 @@ spaceRouter.get("/:spaceId", async (req, res) => {
             return
         }
         res.json({
-            dimensions: `${space.width}x${space.height}`,
-            elements: space.elements.map(element => {
-                return {
-                    elementId: element.elementId,
-                    x: element.x,
-                    y: element.y
-                }
-            })
+            dimensions: `${space.width}x${space.height}`, 
+            elements: space.elements.map(e => {return {
+                id: e.id,
+                element : {
+                    id: e.element.id,
+                    imageUrl: e.element.imageUrl,
+                    width: e.element.width,
+                    height: e.element.height,
+                    static: e.element.static
+                },
+                x: e.x,
+                y: e.y
+            }})
         })
 
     } catch (error) {
