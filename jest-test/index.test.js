@@ -63,106 +63,108 @@ const signInMethod = async (username, password) => {
   });
   return res;
 };
-describe("Authentication endpoint", () => {
-  test("User is able to sign up only once", async () => {
-    const username = "Aditya" + Math.random();
-    const password = "Pass@123";
-
-    const res = await signUpAdmin(username, password);
-    expect(res.status).toBe(200);
-
-    const updatedRes = await signUpAdmin(username, password);
-    expect(updatedRes.status).toBe(400);
-  });
-
-  test("Signup request fails if the username is empty", async () => {
-    const username = "Aditya" + Math.random();
-    const password = "Pass@123";
-
-    const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
-      password,
-      type: "admin",
-    });
-    expect(res.status).toBe(400);
-  });
-
-  test("Signin succeeds if the username and password are correct ", async () => {
-    const username = "Aditya" + Math.random();
-    const password = "Pass@123";
-
-    await signUpAdmin(username, password);
-
-    const res = await signInMethod(username, password);
-    expect(res.status).toBe(200);
-    expect(res.data.token).toBeDefined();
-  });
-
-  test("Signin fails if the username and password are incorrect", async () => {
-    const username = "Aditya" + Math.random();
-    const password = "Pass@123";
-
-    await signUpAdmin(username, password);
-
-    const response = await signInMethod("WrongUsername", password);
-
-    expect(response.status).toBe(403);
-  });
-});
-
-// describe("User metadata endpoint", () => {
-//   let token = "";
-//   let avtarId = "";
-//   beforeAll(async () => {
+// describe("Authentication endpoint", () => {
+//   test("User is able to sign up only once", async () => {
 //     const username = "Aditya" + Math.random();
 //     const password = "Pass@123";
 
-//     signUpAdmin(username, password);
+//     const res = await signUpAdmin(username, password);
+//     expect(res.status).toBe(200);
 
-//     const response = signInMethod(username, password);
-
-//     token = response.data.token;
-
-//     console.log("avatarresponse is " + avatarResponse.data.avatarId);
-
-//     avtarId = avatarResponse.data.avatarId;
+//     const updatedRes = await signUpAdmin(username, password);
+//     expect(updatedRes.status).toBe(400);
 //   });
 
-//   test("User cant update their metadata with a wrong avatar id", async () => {
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/v1/user/metadata`,
-//       {
-//         avatarId: "123123123",
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
+//   test("Signup request fails if the username is empty", async () => {
+//     const username = "Aditya" + Math.random();
+//     const password = "Pass@123";
 
-//     expect(response.status).toBe(400);
-//   });
-//   test("User can update their metadata with the right avatar id", async () => {
-//     const response = await axios.post(
-//       `${BACKEND_URL}/api/v1/user/metadata`,
-//       {
-//         avtarId,
-//       },
-//       {
-//         headers: {
-//           authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     expect(response.status).toBe(200);
-//   });
-//   test("User is not able to update their metadata if the auth header is not present", async () => {
-//     const response = await axios.post(`${BACKEND_URL}/api/v1/user/metadata`, {
-//       avtarId,
+//     const res = await axios.post(`${BACKEND_URL}/api/v1/auth/signup`, {
+//       password,
+//       type: "admin",
 //     });
+//     expect(res.status).toBe(400);
+//   });
+
+//   test("Signin succeeds if the username and password are correct ", async () => {
+//     const username = "Aditya" + Math.random();
+//     const password = "Pass@123";
+
+//     await signUpAdmin(username, password);
+
+//     const res = await signInMethod(username, password);
+//     expect(res.status).toBe(200);
+//     expect(res.data.token).toBeDefined();
+//   });
+
+//   test("Signin fails if the username and password are incorrect", async () => {
+//     const username = "Aditya" + Math.random();
+//     const password = "Pass@123";
+
+//     await signUpAdmin(username, password);
+
+//     const response = await signInMethod("WrongUsername", password);
+
 //     expect(response.status).toBe(403);
 //   });
 // });
+
+describe("User metadata endpoint", () => {
+  let token = "";
+  let avtarId = "";
+  beforeAll(async () => {
+    const username = "Aditya" + Math.random();
+    const password = "Pass@123";
+
+    await signUpAdmin(username, password);
+
+    const response = await signInMethod(username, password);
+
+    token = response.data.token;
+
+    // need to create a admin end point to get the avatar id
+
+    console.log("avatarresponse is " + avatarResponse.data.avatarId);
+
+    avtarId = avatarResponse.data.avatarId;
+  });
+
+  test("User cant update their metadata with a wrong avatar id", async () => {
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/user/metadata`,
+      {
+        avatarId: "123123123",
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    expect(response.status).toBe(400);
+  });
+  test("User can update their metadata with the right avatar id", async () => {
+    const response = await axios.post(
+      `${BACKEND_URL}/api/v1/user/metadata`,
+      {
+        avtarId,
+      },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    expect(response.status).toBe(200);
+  });
+  test("User is not able to update their metadata if the auth header is not present", async () => {
+    const response = await axios.post(`${BACKEND_URL}/api/v1/user/metadata`, {
+      avtarId,
+    });
+    expect(response.status).toBe(403);
+  });
+});
 
 // describe("User avatar information", () => {
 //   let userId;
@@ -173,11 +175,11 @@ describe("Authentication endpoint", () => {
 //     const username = "Aditya" + Math.random();
 //     const password = "Pass@123";
 
-//     const signUpRes = signUpAdmin(username, password);
+//     const signUpRes = await signUpAdmin(username, password);
 
 //     userId = signUpRes.data.userId;
 
-//     const response = signInMethod(username, password);
+//     const response = await signInMethod(username, password);
 
 //     token = response.data.token;
 
@@ -196,7 +198,7 @@ describe("Authentication endpoint", () => {
 //     );
 //     console.log("avatarresponse is " + avatarResponse.data.avatarId);
 
-//     avtarId = avatarResponse.data.avatarId;
+//     avatarId = avatarResponse.data.avatarId;
 //   });
 
 //   test("Get back avatar infomation for a user", async () => {

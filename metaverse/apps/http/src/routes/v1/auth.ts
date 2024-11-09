@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import { JWT_PASSWORD } from "../../config";
 import { compare, hash } from "../../scrypt";
 
-
 export const authRouter = Router();
 
 authRouter.post("/signup", async (req, res) => {
