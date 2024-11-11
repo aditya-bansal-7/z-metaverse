@@ -10,6 +10,16 @@ userRouter.post("/metadata",userMiddlware,async (req,res) => {
         res.status(400).json({message:"Invalid Data / Validation failed"})
         return
     }
+
+    const avatar = await client.avatar.findUnique({
+        where: {
+            id: parsedData.data.avatarId
+        }
+    })
+    if(!avatar){
+        res.status(400).json({message:"Invalid avatar id"})
+        return
+    }
     await client.user.update({
         where: {
             id: req.userId
@@ -24,6 +34,7 @@ userRouter.post("/metadata",userMiddlware,async (req,res) => {
 userRouter.get("/metadata/bulk", async (req, res) => {
     const { ids } = req.query as {ids:string}
     const userIds = ids.slice(1,-1).split(",")
+    console.log(userIds)
     const query = await client.user.findMany({
         where: {
             id: {
@@ -35,11 +46,15 @@ userRouter.get("/metadata/bulk", async (req, res) => {
             id: true
         }
     })
+    console.log(query)
 
+    const avatars = query.map(user => {return {
+        
+        userId: user.id,
+        imageUrl: user.avatar?.imageUrl,
+    }})
+    console.log(avatars)
     res.json({
-        avatars: query.map(user => {
-            userId: user.id
-            imageUrl: user.avatar?.imageUrl
-        })
+       avatars
     })
 })

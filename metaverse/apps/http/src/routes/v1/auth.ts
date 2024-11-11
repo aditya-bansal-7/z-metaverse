@@ -8,7 +8,6 @@ import { compare, hash } from "../../scrypt";
 export const authRouter = Router();
 
 authRouter.post("/signup", async (req, res) => {
-    console.log(req.body);
     const passedData = SignUpSchema.safeParse(req.body);
     if (!passedData.success) {
         res.status(400).json({
