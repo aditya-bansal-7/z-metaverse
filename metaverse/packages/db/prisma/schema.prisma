@@ -16,7 +16,7 @@ datasource db {
 model User {
   id       String  @id @unique @default(cuid())
   username String  @unique
-  password String
+  email    String @unique
   avatarId String?
   role     Role
   spaces   Space[]
@@ -78,6 +78,13 @@ model Avatar {
   imageUrl String?
   name     String?
   users    User[]
+}
+
+model Otp {
+  id        Int      @id @default(autoincrement())
+  email     String
+  otp       Int
+  expiresAt DateTime
 }
 
 enum Role {
