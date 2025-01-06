@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background-color: black;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(45deg, #000000, #1a1a1a);
+  border: 1px solid #3b0764;
+  box-shadow: 0 0 5px #3b0764;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #4c0a80, #9a00e6);
+  border-radius: 10px;
+  box-shadow: 0 0 10px #9a00e6, 0 0 20px #4c0a80;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #9a00e6, #ff00ff);
+  box-shadow: 0 0 15px #ff00ff, 0 0 30px #9a00e6;
+}
